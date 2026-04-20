@@ -1,53 +1,142 @@
-# Online Quiz & Assessment System
+import java.util.*;
+import java.util.stream.Collectors;
 
-A Java console-based quiz system with timer, multiple categories, auto-scoring, and detailed performance analysis.
+public class Library {
+    private Map<Integer, Book> books = new HashMap<>();
+    private Map<Integer, Member> members = new HashMap<>();
+    private List<Transaction> transactions = new ArrayList<>();
+    private int bookIdCounter = 1;
+    private int memberIdCounter = 1;
+    private int transactionIdCounter = 1;
 
-## Features
+    public Library() {
+        seedSampleData();
+    }
 
-- 20 preloaded MCQ questions across 6 categories
-- Random mode or category-specific quiz
-- Configurable time limit with auto-submit on timeout
-- Detailed score breakdown per category
-- Visual progress bar for performance
-- Performance rating message (Outstanding / Excellent / Good / Average / Keep Learning)
+    private void seedSampleData() {
+        addBook("The Alchemist", "Paulo Coelho", "Fiction");
+        addBook("Clean Code", "Robert C. Martin", "Technology");
+        addBook("Atomic Habits", "James Clear", "Self-Help");
+        addBook("The Great Gatsby", "F. Scott Fitzgerald", "Classic");
+        addBook("Deep Work", "Cal Newport", "Productivity");
+        addBook("1984", "George Orwell", "Dystopian");
 
-## OOP Concepts Used
+        registerMember("Aarav Mehta", "aarav@email.com", "9876543210");
+        registerMember("Priya Sharma", "priya@email.com", "9123456789");
+        registerMember("Rishi Nair", "rishi@email.com", "9988776655");
+    }
 
-- **Encapsulation** - All fields private with getters
-- **Collections** - ArrayList, HashMap, LinkedHashMap, Set
-- **Separation of Concerns** - Question, QuizSession, QuestionBank, Main
-- **Java Scanner** - Console input handling
-- **System.currentTimeMillis()** - Timer tracking
+    public void addBook(String title, String author, String genre) {
+        Book book = new Book(bookIdCounter++, title, author, genre);
+        books.put(book.getBookId(), book);
+        System.out.println("Book added: " + book.getTitle() + " (ID: " + book.getBookId() + ")");
+    }
 
-## How to Run
+    public void removeBook(int bookId) {
+        Book book = books.get(bookId);
+        if (book == null) { System.out.println("Book not found."); return; }
+        boolean isIssued = transactions.stream()
+                .anyMatch(t -> t.getBookId() == bookId && !t.isReturned());
+        if (isIssued) { System.out.println("Cannot remove: book is currently issued."); return; }
+        books.remove(bookId);
+        System.out.println("Book removed: " + book.getTitle());
+    }
 
-```bash
-javac *.java
-java Main
-```
+    public void updateBook(int bookId, String title, String author, String genre) {
+        Book book = books.get(bookId);
+        if (book == null) { System.out.println("Book not found."); return; }
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setGenre(genre);
+        System.out.println("Book updated successfully.");
+    }
 
-## File Structure
+    public void registerMember(String name, String email, String phone) {
+        Member member = new Member(memberIdCounter++, name, email, phone);
+        members.put(member.getMemberId(), member);
+        System.out.println("Member registered: " + member.getName() + " (ID: " + member.getMemberId() + ")");
+    }
 
-```
-online_quiz_java/
-├── Question.java       - MCQ question entity
-├── QuestionBank.java   - Bank of 20 questions, category filter
-├── QuizSession.java    - Timer + answer collection + result display
-└── Main.java           - Menu and quiz flow
-```
+    public void issueBook(int memberId, int bookId) {
+        Member member = members.get(memberId);
+        Book book = books.get(bookId);
+        if (member == null) { System.out.println("Member not found."); return; }
+        if (book == null) { System.out.println("Book not found."); return; }
+        if (!book.isAvailable()) { System.out.println("Sorry, this book is already issued."); return; }
 
-## Categories Available
+        book.setAvailable(false);
+        Transaction txn = new Transaction(transactionIdCounter++, memberId, bookId);
+        transactions.add(txn);
+        System.out.println("Book issued successfully. Due date: " + txn.getDueDate());
+    }
 
-Java, Python, Database, Networking, DSA, General CS
+    public void returnBook(int transactionId) {
+        Transaction txn = transactions.stream()
+                .filter(t -> t.getTransactionId() == transactionId && !t.isReturned())
+                .findFirst().orElse(null);
+        if (txn == null) { System.out.println("Active transaction not found."); return; }
 
-## Sample Output
+        txn.returnBook();
+        books.get(txn.getBookId()).setAvailable(true);
+        double fine = txn.calculateFine();
+        System.out.println("Book returned successfully.");
+        if (fine > 0) {
+            System.out.println("Late return fine: INR " + String.format("%.2f", fine));
+        } else {
+            System.out.println("No fine. Returned on time.");
+        }
+    }
 
-```
-Q1. [Java] Which keyword is used to create a class in Java?
-   A. class   B. Class   C. new   D. struct
-Your answer: A
+    public void searchByTitle(String keyword) {
+        List<Book> results = books.values().stream()
+                .filter(b -> b.getTitle().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+        printSearchResults(results, "title", keyword);
+    }
 
-Score           : 85.0%
-Performance     : [█████████████████░░░]
-Rating          : Excellent! Strong performance across categories.
-```
+    public void searchByAuthor(String keyword) {
+        List<Book> results = books.values().stream()
+                .filter(b -> b.getAuthor().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toList());
+        printSearchResults(results, "author", keyword);
+    }
+
+    private void printSearchResults(List<Book> results, String field, String keyword) {
+        if (results.isEmpty()) {
+            System.out.println("No books found matching " + field + ": " + keyword);
+        } else {
+            System.out.println("Search results (" + results.size() + " found):");
+            results.forEach(System.out::println);
+        }
+    }
+
+    public void listAllBooks() {
+        if (books.isEmpty()) { System.out.println("No books in library."); return; }
+        System.out.println("\n--- All Books ---");
+        books.values().stream()
+                .sorted(Comparator.comparingInt(Book::getBookId))
+                .forEach(System.out::println);
+    }
+
+    public void listAllMembers() {
+        if (members.isEmpty()) { System.out.println("No members registered."); return; }
+        System.out.println("\n--- All Members ---");
+        members.values().stream()
+                .sorted(Comparator.comparingInt(Member::getMemberId))
+                .forEach(System.out::println);
+    }
+
+    public void viewAllTransactions() {
+        if (transactions.isEmpty()) { System.out.println("No transactions yet."); return; }
+        System.out.println("\n--- All Transactions ---");
+        transactions.forEach(System.out::println);
+    }
+
+    public void viewActiveTransactions() {
+        List<Transaction> active = transactions.stream()
+                .filter(t -> !t.isReturned()).collect(Collectors.toList());
+        if (active.isEmpty()) { System.out.println("No active transactions."); return; }
+        System.out.println("\n--- Active Issued Books ---");
+        active.forEach(System.out::println);
+    }
+}
