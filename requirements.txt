@@ -1,47 +1,53 @@
-# Weather Data Analyzer & Forecast Dashboard
+# Smart Expense Tracker
 
-A Python CLI application that fetches, stores, and analyzes weather data with visual trend charts and temperature prediction using linear regression.
+A Python CLI application that helps you log, categorize, and analyze your daily expenses with visual insights.
 
 ## Features
 
-- Fetch live weather via OpenWeatherMap API
-- Manual weather data entry support
-- Temperature and humidity trend visualization (dual-chart PNG)
-- Simple linear regression for 1/3/7-day temperature prediction
-- Offline mode with 14-day sample data for Hyderabad
-- Historical data stored in `weather_history.json`
+- Add expenses with date, category, amount, and description
+- View all recorded expenses in a clean table
+- Monthly summary with category-wise breakdown
+- Pie chart visualization saved as PNG
+- Smart suggestions for reducing spending
+- Delete entries when needed
+- Data stored locally in `expenses.json`
 
 ## Tools Used
 
 - **Python 3.x** - Core language
-- **urllib** - HTTP requests (no external HTTP dependency)
-- **matplotlib** - Dual-panel trend chart (temperature + humidity)
-- **statistics** - Mean, trend calculation
-- **Linear Regression** - Built from scratch using slope/intercept formula
 - **json** - Data persistence
+- **matplotlib** - Pie chart visualization
+- **collections.defaultdict** - Aggregation
+- **datetime** - Date handling
 
-## Setup
+## Setup & Run
 
 ```bash
 pip install -r requirements.txt
-
-# Optional: for live weather data
-export OPENWEATHER_API_KEY=your_key_here
-
 python main.py
 ```
 
-## Get Free API Key
+## Categories Supported
 
-Sign up at https://openweathermap.org/api (Free tier supports 60 calls/min)
+Food, Travel, Bills, Entertainment, Health, Shopping, Education, Other
 
-## Sample Prediction Output
+## How It Works
+
+1. Run the script and choose from the menu
+2. Add daily expenses as they happen
+3. At month end, select option 3 to see your summary
+4. A pie chart is auto-generated and saved
+
+## Screenshot
 
 ```
---- Simple Linear Regression Forecast ---
-  Predicted temp on 2024-06-01: 31.4°C
-  Predicted temp on 2024-06-03: 32.1°C
-  Predicted temp on 2024-06-07: 33.5°C
+==================================================
+   Smart Expense Tracker
+==================================================
 
-  Trend direction: The weather appears to be warming in this region.
+1. Add Expense
+2. View All Expenses
+3. Monthly Summary & Chart
+4. Delete an Expense
+5. Exit
 ```
