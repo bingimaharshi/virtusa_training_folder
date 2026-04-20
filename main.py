@@ -1,1 +1,1 @@
-pdfplumber>=0.9.0
+matplotlib>=3.7.0
