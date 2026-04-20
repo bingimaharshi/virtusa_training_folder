@@ -1,0 +1,59 @@
+# Resume Analyzer & Job Matcher
+
+A Python NLP tool that reads resumes, extracts skills, and compares them against job descriptions to give a match score with improvement suggestions.
+
+## Features
+
+- Reads resumes in `.txt` or `.pdf` format
+- Extracts email, phone, and technical skills automatically
+- Compares skills against a job description
+- Shows match percentage with a visual progress bar
+- Lists matched and missing skills
+- Provides actionable improvement suggestions
+- Saves full analysis to `analysis_result.json`
+
+## Tools Used
+
+- **Python 3.x** - Core language
+- **pdfplumber** - PDF text extraction
+- **re (regex)** - Keyword and contact info extraction
+- **json** - Result persistence
+- **Pattern matching** - Skill category detection
+
+## Skill Categories Detected
+
+Programming Languages, Web Technologies, Databases, Cloud & DevOps, Data & AI, Soft Skills
+
+## Setup & Run
+
+```bash
+pip install -r requirements.txt
+python main.py
+```
+
+## Sample Output
+
+```
+============================================================
+       Resume Analyzer & Job Matcher
+============================================================
+
+Candidate Email : aarav.mehta@email.com
+Phone           : +91 9876543210
+
+--- Skills Found in Resume ---
+  Programming Languages: python, javascript
+  Web Technologies: django, flask, react
+  Databases: sql, mysql, postgresql
+  Cloud & DevOps: git, docker, aws, linux
+
+  Match Score: 82.4%
+  [████████████████░░░░]
+
+  Missing Skills: kubernetes, redis, ci/cd
+
+--- Suggestions ---
+  1. Great match! Highlight these skills prominently.
+  2. Focus on learning: kubernetes, redis, ci/cd
+  3. Quantify achievements to stand out.
+```
