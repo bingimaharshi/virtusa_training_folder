@@ -1,82 +1,53 @@
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+# Online Quiz & Assessment System
 
-public abstract class Account {
-    protected String accountNumber;
-    protected String holderName;
-    protected double balance;
-    protected String username;
-    protected String password;
-    protected List<String> transactionHistory;
-    protected static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+A Java console-based quiz system with timer, multiple categories, auto-scoring, and detailed performance analysis.
 
-    public Account(String accountNumber, String holderName, String username, String password, double initialDeposit) {
-        this.accountNumber = accountNumber;
-        this.holderName = holderName;
-        this.username = username;
-        this.password = password;
-        this.balance = initialDeposit;
-        this.transactionHistory = new ArrayList<>();
-        logTransaction("Account created with initial deposit of INR " + String.format("%.2f", initialDeposit));
-    }
+## Features
 
-    public boolean authenticate(String username, String password) {
-        return this.username.equals(username) && this.password.equals(password);
-    }
+- 20 preloaded MCQ questions across 6 categories
+- Random mode or category-specific quiz
+- Configurable time limit with auto-submit on timeout
+- Detailed score breakdown per category
+- Visual progress bar for performance
+- Performance rating message (Outstanding / Excellent / Good / Average / Keep Learning)
 
-    public boolean deposit(double amount) {
-        if (amount <= 0) { System.out.println("Deposit amount must be positive."); return false; }
-        balance += amount;
-        logTransaction("Deposited INR " + String.format("%.2f", amount) + " | Balance: INR " + String.format("%.2f", balance));
-        System.out.println("Deposited INR " + String.format("%.2f", amount) + " successfully.");
-        return true;
-    }
+## OOP Concepts Used
 
-    public boolean withdraw(double amount) {
-        if (amount <= 0) { System.out.println("Withdrawal amount must be positive."); return false; }
-        if (amount > balance) { System.out.println("Insufficient balance. Available: INR " + String.format("%.2f", balance)); return false; }
-        balance -= amount;
-        logTransaction("Withdrew INR " + String.format("%.2f", amount) + " | Balance: INR " + String.format("%.2f", balance));
-        System.out.println("Withdrawn INR " + String.format("%.2f", amount) + " successfully.");
-        return true;
-    }
+- **Encapsulation** - All fields private with getters
+- **Collections** - ArrayList, HashMap, LinkedHashMap, Set
+- **Separation of Concerns** - Question, QuizSession, QuestionBank, Main
+- **Java Scanner** - Console input handling
+- **System.currentTimeMillis()** - Timer tracking
 
-    public boolean transfer(Account target, double amount) {
-        if (this.withdraw(amount)) {
-            target.deposit(amount);
-            logTransaction("Transferred INR " + String.format("%.2f", amount) + " to Account: " + target.getAccountNumber());
-            target.logTransaction("Received INR " + String.format("%.2f", amount) + " from Account: " + this.accountNumber);
-            return true;
-        }
-        return false;
-    }
+## How to Run
 
-    protected void logTransaction(String message) {
-        String timestamp = LocalDateTime.now().format(FORMATTER);
-        transactionHistory.add("[" + timestamp + "] " + message);
-    }
+```bash
+javac *.java
+java Main
+```
 
-    public void printTransactionHistory() {
-        System.out.println("\n--- Transaction History for " + holderName + " ---");
-        if (transactionHistory.isEmpty()) {
-            System.out.println("No transactions yet.");
-        } else {
-            transactionHistory.forEach(System.out::println);
-        }
-    }
+## File Structure
 
-    public void printBalance() {
-        System.out.println("Account Holder : " + holderName);
-        System.out.println("Account Number : " + accountNumber);
-        System.out.println("Account Type   : " + getAccountType());
-        System.out.println("Balance        : INR " + String.format("%.2f", balance));
-    }
+```
+online_quiz_java/
+├── Question.java       - MCQ question entity
+├── QuestionBank.java   - Bank of 20 questions, category filter
+├── QuizSession.java    - Timer + answer collection + result display
+└── Main.java           - Menu and quiz flow
+```
 
-    public String getAccountNumber() { return accountNumber; }
-    public String getHolderName() { return holderName; }
-    public String getUsername() { return username; }
-    public double getBalance() { return balance; }
-    public abstract String getAccountType();
-}
+## Categories Available
+
+Java, Python, Database, Networking, DSA, General CS
+
+## Sample Output
+
+```
+Q1. [Java] Which keyword is used to create a class in Java?
+   A. class   B. Class   C. new   D. struct
+Your answer: A
+
+Score           : 85.0%
+Performance     : [█████████████████░░░]
+Rating          : Excellent! Strong performance across categories.
+```
